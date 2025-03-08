@@ -1,0 +1,17 @@
+#!/bin/sh
+
+if [ ! -d "$1" ]; then
+	echo "Usage: $0 <directory>"
+	exit 1
+fi
+
+rm -f hashes.txt eql_hashes.txt
+
+find "$1" -type f | while read -r file; do
+	echo "$(sha256sum "$file" | awk '{print $1}') $file" >>hashes.txt
+done
+
+awk '{print $1}' hashes.txt | sort | uniq -d | while read -r hash; do
+	echo "Hash: $hash" >>eql_hashes.txt
+	grep "^$hash" hashes.txt | awk '{print $2}' >>eql_hashes.txt
+done

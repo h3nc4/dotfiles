@@ -1,0 +1,42 @@
+# Private config
+private/
+
+# Auto generated files
+GIMP/
+qalculate/
+torbrowser/
+transmission/
+Signal/
+systemd/
+libreoffice/
+chromium/
+BraveSoftware/
+pulse/cookie
+bash/history*
+htop/htoprc
+keepassxc/
+parallel/
+dconf/user
+0ad/
+menus/applications-merged/
+unity3d/
+jgit/
+docker/
+tigervnc/
+QtProject.conf
+pavucontrol.ini
+
+# symlinks
+bin/bibverse
+bin/nvim
+bin/yt
+bin/yt-dlp
+mpv/yt-dlp
+
+# nvim
+nvim/tags
+nvim/test.sh
+nvim/.luarc.json
+nvim/nvim
+nvim/spell/
+nvim/lazy-lock.json

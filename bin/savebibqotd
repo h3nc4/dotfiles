@@ -1,0 +1,4 @@
+#!/bin/sh
+
+tr -d '\n' </tmp/bible.qotd >>"$HOME/.local/bible.quotes"
+printf "\n" >>"$HOME/.local/bible.quotes"
