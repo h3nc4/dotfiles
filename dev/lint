@@ -5,7 +5,7 @@ SHELL_SOURCES="$(find ./bash ./profile.d -type f -print 2>/dev/null)
 ./env
 "
 
-SHELL_SCRIPTS=$(find . -type f -not -path "./.git/*" -print0 | xargs -0 grep -Il '^#!/bin/sh' | sort -u)
+SHELL_SCRIPTS=$(find . -type f -not -path "./.git/*" -print0 | xargs -0 grep -IEl '^(#!/bin/sh|#!/usr/bin/env bash)' | sort -u)
 
 echo "Checking the following scripts:"
 echo "${SHELL_SCRIPTS}"
