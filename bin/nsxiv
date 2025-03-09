@@ -8,13 +8,13 @@ fi
 
 first_file=""
 for arg in "$@"; do
-	case "$arg" in
+	case "${arg}" in
 	-*) ;; # skip flags
 	*)
-		first_file="$arg"
+		first_file="${arg}"
 		break
 		;;
 	esac
 done
 
-exec /usr/bin/nsxiv -fba "$@" "$(dirname "$(readlink -f "$first_file")")"
+exec /usr/bin/nsxiv -fba "$@" "$(dirname "$(readlink -f "${first_file}")")"
