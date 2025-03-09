@@ -68,7 +68,8 @@ export HISTCONTROL='ignoreboth'
 export HISTSIZE=''
 export HISTFILESIZE=''
 export HISTTIMEFORMAT='%F %T '
-export HISTFILE="${HOME}/.config/bash/history"
+# shellcheck disable=SC2154
+export HISTFILE="${XDG_DATA_HOME}/bash_history"
 shopt -s histappend       # append to history, don't overwrite it
 shopt -s checkwinsize     # check the window size after each command
 shopt -s globstar         # understand ** as all files in all subdirectories
