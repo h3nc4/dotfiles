@@ -8,8 +8,8 @@ elif [ "$(tty)" != /dev/tty1 ]; then # Clear any messages on ttys but tty1
 fi
 
 # Load local profiles
-if [ -d "${HOME}/.local/profile.d" ]; then
-	for i in "${HOME}/.local/profile.d/"*; do . "${i}"; done
+if [ -d "${HOME}/.config/profile.d" ]; then
+	for i in "${HOME}/.config/profile.d/"*; do . "${i}"; done
 fi
 unset i
 
@@ -96,3 +96,6 @@ else
 		disown $! # Suppress job finish notification by disowning it
 	fi
 fi
+
+# Remove annoying folders
+rm -rf "${HOME}/.pki" "${HOME}/Downloads"
