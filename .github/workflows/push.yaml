@@ -22,3 +22,44 @@ jobs:
         run: git config --global --add safe.directory '*'
       - name: Run check
         run: ./dev/ci
+  deploy:
+    needs: ci
+    runs-on: ubuntu-latest
+    container:
+      image: debian:bookworm-slim
+    steps:
+      - name: Install dependencies
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get upgrade -y --no-install-recommends \
+            ca-certificates \
+            git \
+            gpg \
+            gpg-agent
+      - uses: actions/checkout@v4
+      - name: Import gpg key
+        run: echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+      - name: Tar repo
+        run: |
+          ./dev/make_tar
+          gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --detach-sign --armor -o dotfiles.tgz.asc dotfiles.tgz
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+      - name: Gen tag name
+        run: echo "SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-8)" >>$GITHUB_ENV
+      - name: Create tag
+        run: |
+          git config --global safe.directory '*'
+          git tag ${{ env.SHORT_SHA }}
+          git push origin ${{ env.SHORT_SHA }}
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.SHORT_SHA }}
+          files: |
+            dotfiles.tgz.asc
+            dotfiles.tgz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
