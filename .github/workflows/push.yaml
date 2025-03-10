@@ -47,7 +47,7 @@ jobs:
       - name: Tar repo
         run: |
           ./dev/make_tar
-          gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --detach-sign --armor -o dotfiles.tgz.asc dotfiles.tgz
+          gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --detach-sign --armor -o dotfiles.tar.gz.asc dotfiles.tar.gz
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       - name: Gen tag name
@@ -62,7 +62,7 @@ jobs:
         with:
           tag_name: ${{ env.SHORT_SHA }}
           files: |
-            dotfiles.tgz.asc
-            dotfiles.tgz
+            dotfiles.tar.gz.asc
+            dotfiles.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

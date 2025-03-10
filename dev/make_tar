@@ -2,10 +2,10 @@
 set -e
 
 # Create the tarball in a temporary directory
-TMPFILE=$(mktemp --tmpdir tmp.XXXXXXXXXX.tgz)
+TMPFILE=$(mktemp --tmpdir tmp.XXXXXXXXXX.tar.gz)
 trap 'rm -f ${TMPFILE}' EXIT
 
 tar --transform 's,^./,dotfiles/,' -czf "${TMPFILE}" --exclude=.git* .
 
 # Move the tarball to the current directory
-mv -f "${TMPFILE}" ./dotfiles.tgz
+mv -f "${TMPFILE}" ./dotfiles.tar.gz
