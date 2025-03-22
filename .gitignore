@@ -1,5 +1,6 @@
 # Private config
 private/
+.wayland
 
 # Auto generated files
 GIMP/

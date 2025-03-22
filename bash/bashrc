@@ -33,14 +33,23 @@ fi
 
 gpg-connect-agent /bye 2>/dev/null # Start gpg-agent
 
-# Start X at login
+# Start X or Wayland at login
 if [ "$(tty)" = "/dev/tty1" ]; then
-	if [ -f /tmp/.Xinit-lock ]; then
-		echo "Xorg has restarted. Press Enter to restart Xorg."
+	if [ -f "${HOME}/.config/.wayland" ]; then
+		session="dwl"
+		lockfile="/tmp/.dwl-lock"
+		session_cmd=".config/wayland/dyn-status | exec dwl -s .config/wayland/dyn-wallpapers"
+	else
+		session="Xorg"
+		lockfile="/tmp/.Xinit-lock"
+		session_cmd="exec startx"
+	fi
+	if [ -f "$lockfile" ]; then
+		echo "$session has restarted. Press Enter to restart $session."
 		read -r
 	fi
-	touch /tmp/.Xinit-lock
-	pidof Xorg >/dev/null 2>&1 || exec startx >/dev/null 2>&1
+	touch "$lockfile"
+	pidof "$session" >/dev/null 2>&1 || eval "$session_cmd" >/dev/null 2>&1
 fi
 
 if shopt -oq posix; then # If POSIX, return
