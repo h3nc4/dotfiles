@@ -27,8 +27,8 @@ case $- in # Check for an interactive session
 *) return ;;
 esac
 
-if [ -z "$SSH_AUTH_SOCK" ]; then # Start ssh-agent
-	eval $(ssh-agent -s)
+if [ -z "${SSH_AUTH_SOCK}" ]; then # Start ssh-agent
+	eval "$(ssh-agent -s)"
 fi
 
 gpg-connect-agent /bye 2>/dev/null # Start gpg-agent
@@ -44,12 +44,12 @@ if [ "$(tty)" = "/dev/tty1" ]; then
 		lockfile="/tmp/.Xinit-lock"
 		session_cmd="exec startx"
 	fi
-	if [ -f "$lockfile" ]; then
-		echo "$session has restarted. Press Enter to restart $session."
+	if [ -f "${lockfile}" ]; then
+		echo "${session} has restarted. Press Enter to restart ${session}."
 		read -r
 	fi
-	touch "$lockfile"
-	pidof "$session" >/dev/null 2>&1 || eval "$session_cmd" >/dev/null 2>&1
+	touch "${lockfile}"
+	pidof "${session}" >/dev/null 2>&1 || eval "${session_cmd}" >/dev/null 2>&1
 fi
 
 if shopt -oq posix; then # If POSIX, return

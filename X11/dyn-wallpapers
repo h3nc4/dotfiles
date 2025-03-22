@@ -1,13 +1,17 @@
 #!/bin/sh
+# shellcheck disable=SC2154
 
 while getopts "s:" opt; do
-	case $opt in
-		s) FIRST_WALLPAPER="$OPTARG" ;;
-		*) echo "Usage: $0 [-s wallpaper_path]"; exit 1 ;;
+	case ${opt} in
+	s) FIRST_WALLPAPER="${OPTARG}" ;;
+	*)
+		echo "Usage: $0 [-s wallpaper_path]"
+		exit 1
+		;;
 	esac
 done
 
-wallpapers=$(find "$WALLPAPER_DIR" -type f -printf '%P\n' | shuf --random-source=/dev/urandom)
+wallpapers=$(find "${WALLPAPER_DIR}" -type f -printf '%P\n' | shuf --random-source=/dev/urandom)
 trap 'kill $!' USR1
 trap 'kill $!; RELOAD_WALL=y' USR2
 trap 'kill $!' EXIT
@@ -20,10 +24,8 @@ if [ -n "${FIRST_WALLPAPER}" ]; then
 	xwallpaper --zoom "${FIRST_WALLPAPER}"
 	sleep 300 &
 	wait $!
-	# shellcheck disable=SC2154
 	if [ "${RELOAD_WALL}" = "y" ]; then
 		unset RELOAD_WALL
-		break
 	fi
 fi
 
@@ -32,7 +34,6 @@ while true; do
 		xwallpaper --zoom "${WALLPAPER_DIR}/${wallpaper}"
 		sleep 300 &
 		wait $!
-		# shellcheck disable=SC2154
 		if [ "${RELOAD_WALL}" = "y" ]; then
 			unset RELOAD_WALL
 			break
