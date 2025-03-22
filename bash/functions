@@ -72,7 +72,7 @@ safecp() {
 }
 
 removei386() {
-	dpkg -l | grep -i :i386 | awk '{print $2}' | xargs doas apt autopurge --allow-remove-essential &&
+	dpkg -l | grep -i :i386 | awk '{print $2}' | xargs doas apt autopurge --allow-remove-essential -y &&
 		doas dpkg --remove-architecture i386
 }
 

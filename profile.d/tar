@@ -25,7 +25,7 @@ ctarssl() { # tar -czf with encryption
 	fi
 	local out="$1"
 	shift
-	tar -czf - "$@" | openssl enc -aes-256-cbc -pbkdf2 -salt | tee "${out}" >/dev/null
+	tar -czf - "$@" | openssl enc -aes-256-cbc -pbkdf2 -salt >"${out}"
 }
 
 untar() { # tar -xzf

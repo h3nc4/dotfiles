@@ -6,11 +6,11 @@ sleep 2
 xset +fp "${HOME}/.local/share/fonts/"
 xset fp rehash
 
-"${HOME}/.config/X11/dyn-wallpapers" &
+"${HOME}/.config/X11/dyn-wallpapers" -s "${WALLPAPER_DIR}/landscape.jpg" &
 "${HOME}/.config/X11/dyn-status" &
 "${HOME}/.config/X11/monitors"
 
-xwallpaper --zoom "$(find "${HOME}/media/wallpapers/" -type f | shuf -n 1)"
+xwallpaper --zoom "${WALLPAPER_DIR}/landscape.jpg"
 
 # Composer
 compton &
