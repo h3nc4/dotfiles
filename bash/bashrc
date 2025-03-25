@@ -1,3 +1,4 @@
+# shellcheck disable=SC2154
 export LOADED_BASHRC=1 # Prevents this file from being sourced more than once
 
 # Start tmux at login
@@ -38,7 +39,10 @@ if [ "$(tty)" = "/dev/tty1" ]; then
 	if [ -f "${HOME}/.config/.wayland" ]; then
 		session="dwl"
 		lockfile="/tmp/.dwl-lock"
-		session_cmd=".config/wayland/dyn-status | exec dwl -s .config/wayland/dyn-wallpapers"
+		pipe="/tmp/dwl-status-pipe"
+		[ -p "${pipe}" ] || mkfifo "${pipe}"
+		.config/wayland/dyn-status >"${pipe}" &
+		session_cmd="exec dwl -s \".config/wayland/dyn-wallpapers -s ${WALLPAPER_DIR}/landscape.jpg\" <\"${pipe}\""
 	else
 		session="Xorg"
 		lockfile="/tmp/.Xinit-lock"
@@ -83,7 +87,6 @@ export HISTCONTROL='ignoreboth'
 export HISTSIZE=''
 export HISTFILESIZE=''
 export HISTTIMEFORMAT='%F %T '
-# shellcheck disable=SC2154
 export HISTFILE="${XDG_DATA_HOME}/bash_history"
 shopt -s histappend       # append to history, don't overwrite it
 shopt -s checkwinsize     # check the window size after each command
@@ -96,7 +99,7 @@ complete -F _command doas # complete doas commandss
 PROMPT_COMMAND="build_prompt"
 build_prompt() {
 	local ref
-	ref=$(git branch --show-current 2>/dev/null || true)
+	ref=$(git branch --show-current 2>/dev/null || :)
 	# PS1="${RESET}[\A/\u \W]${ref:+($ref)}\$ " # uncomment for no color
 	# shellcheck disable=SC2154
 	PS1="${BOLD}${RED}[${GREEN}\A${BLUE}/${CYAN}\u ${YELLOW}\W${RED}]${WHITE}${ref:+(${RED}${ref}${WHITE})}\$ ${RESET}"
