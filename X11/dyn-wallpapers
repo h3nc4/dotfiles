@@ -24,12 +24,9 @@ if [ -n "${FIRST_WALLPAPER}" ]; then
 	xwallpaper --zoom "${FIRST_WALLPAPER}"
 	sleep 300 &
 	wait $!
-	if [ "${RELOAD_WALL}" = "y" ]; then
-		unset RELOAD_WALL
-	fi
 fi
 
-while true; do
+while :; do
 	for wallpaper in ${wallpapers}; do
 		xwallpaper --zoom "${WALLPAPER_DIR}/${wallpaper}"
 		sleep 300 &

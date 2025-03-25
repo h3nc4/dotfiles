@@ -28,3 +28,10 @@ weavekeys() {
 		doas gpg --no-default-keyring --keyring /usr/share/keyrings/dreamweaver.gpg --fingerprint >/dev/null 2>&1 &&
 		wget -q -O- "https://h3nc4.com/dreamweaver.asc" | doas gpg --no-default-keyring --keyring /usr/share/keyrings/dreamweaver.gpg --import
 }
+
+get_steam() {
+	doas sed -i 's/main/main contrib non-free/g' /etc/apt/sources.list.d/debian.sources &&
+		doas dpkg --add-architecture i386 &&
+		apt-get update &&
+		apt-get upgrade steam-installer mesa-vulkan-drivers libglx-mesa0:i386 mesa-vulkan-drivers:i386 libgl1-mesa-dri:i386
+}

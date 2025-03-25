@@ -31,12 +31,9 @@ if [ -n "${FIRST_WALLPAPER}" ]; then
 	sleep 300 &
 	wait $!
 	kill "${BG_PID}"
-	if [ "${RELOAD_WALL}" = "y" ]; then
-		unset RELOAD_WALL
-	fi
 fi
 
-while true; do
+while :; do
 	for wallpaper in ${wallpapers}; do
 		swaybg --mode fill -i "${WALLPAPER_DIR}/${wallpaper}" &
 		BG_PID=$!
