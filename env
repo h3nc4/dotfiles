@@ -58,10 +58,6 @@ export BROWSER='firefox'
 export GTK_THEME='Materia-dark'
 export XKB_DEFAULT_LAYOUT='br'
 export XKB_DEFAULTMODEL='pc105'
-case "$(tty)" in # This file is sourced before a tmux session is opened
-/dev/pts/*) export TERM=st-256color ;;
-*) export TERM=linux ;;
-esac
 export MANPAGER='less -R'
 export PAGER='less'
 export EDITOR='nano'
