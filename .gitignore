@@ -1,6 +1,5 @@
 # Private config
 private/
-.wayland
 
 # Auto generated files
 GIMP/
@@ -12,7 +11,7 @@ systemd/
 libreoffice/
 chromium/
 BraveSoftware/
-pulse/cookie
+pulse/
 htop/htoprc
 keepassxc/
 parallel/
@@ -23,8 +22,11 @@ unity3d/
 jgit/
 docker/
 tigervnc/
+inkscape/
+.ruff_cache
 QtProject.conf
 pavucontrol.ini
+.wayland
 
 # symlinks
 bin/bibverse
