@@ -28,11 +28,23 @@ case $- in # Check for an interactive session
 *) return ;;
 esac
 
-if [ -z "${SSH_AUTH_SOCK}" ]; then # Start ssh-agent
-	eval "$(ssh-agent -s)"
-fi
+if [ -z "${SSH_AUTH_SOCK}" ]; then {
+	if [ -f "${SSH_ENV}" ]; then
+		. "${SSH_ENV}" >/dev/null
+	fi
 
-gpg-connect-agent /bye 2>/dev/null # Start gpg-agent
+	# Start agent if file does not exist or if the agent is not running
+	if ! [ -f "${SSH_ENV}" ] || ! kill -0 "${SSH_AGENT_PID}" 2>/dev/null; then
+		(
+			umask 066
+			ssh-agent >"${SSH_ENV}"
+		)
+	fi
+} & fi
+
+. "${SSH_ENV}" >/dev/null
+
+gpg-connect-agent /bye 2>/dev/null & # Start gpg-agent
 
 # Start X or Wayland at login
 if [ "$(tty)" = "/dev/tty1" ]; then

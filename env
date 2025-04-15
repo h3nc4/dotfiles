@@ -70,3 +70,4 @@ export CHROME_EXECUTABLE='/usr/bin/chromium'
 GPG_TTY="$(tty 2>/dev/null || echo "/dev/tty2")"
 export GPG_TTY
 export WALLPAPER_DIR="${HOME}/media/wallpapers/"
+export SSH_ENV="$HOME/.ssh/agent-env"
