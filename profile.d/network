@@ -22,7 +22,7 @@ update() {
 
 myip() {
 	echo "Private IPv4: $(hostname -I | awk '{print $1}')"
-	echo "IPv6: $(ip -6 addr show | grep -oP '(?<=inet6\s)[\da-f:]+(?=/64)' | head -n 1)"
+	echo "IPv6: $(ip -6 addr show scope global | awk '/inet6/ {print $2}' | cut -d/ -f1)"
 	echo "Public IPv4: $(curl -s4 https://ifconfig.me)"
 }
 

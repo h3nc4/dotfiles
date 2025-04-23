@@ -54,7 +54,7 @@ if [ "$(tty)" = "/dev/tty1" ]; then
 		pipe="/tmp/dwl-status-pipe"
 		[ -p "${pipe}" ] || mkfifo "${pipe}"
 		.config/wayland/dyn-status >"${pipe}" &
-		session_cmd="exec dwl -s \".config/wayland/dyn-wallpapers -s ${WALLPAPER_DIR}/landscape.jpg\" <\"${pipe}\""
+		session_cmd="exec dwl -s \".config/wayland/dyn-wallpapers -s '${WALLPAPER_DIR}/landscape.jpg' <&-\" <\"${pipe}\""
 	else
 		session="Xorg"
 		lockfile="/tmp/.Xinit-lock"
@@ -105,7 +105,7 @@ shopt -s checkwinsize     # check the window size after each command
 shopt -s globstar         # understand ** as all files in all subdirectories
 shopt -s dotglob          # also include hidden files in globbing
 complete -cf doas         # complete doas commands
-complete -F _command doas # complete doas commandss
+complete -F _command doas # complete doas commands
 
 # Set the prompt
 PROMPT_COMMAND="build_prompt"

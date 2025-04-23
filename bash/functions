@@ -3,6 +3,10 @@ burn() {
 	sync
 }
 
+gtfiles() {
+	doas du -ah --max-depth=1 / 2>/dev/null | sort -hr | head -n 5
+}
+
 lock() {
 	doas openvt -c7 -- sh -c "USER=${USER} vlock -a; chvt 1" &&
 		doas chvt 7
@@ -57,10 +61,6 @@ chwallpaper() {
 	xwallpaper --zoom "$1"
 }
 
-playMoOII() {
-	dosbox -c "mount c ${HOME}/.local/games/Master_of_Orion_II/mastori2" -c "c:" -c "Orion2.exe" -conf "${HOME}/.local/games/Master_of_Orion_II/dosbox.conf"
-}
-
 crop() {
 	local base="${1%.*}"                          # Extract the base filename (without extension)
 	local ext="${1##*.}"                          # Extract the file extension
@@ -71,9 +71,13 @@ safecp() {
 	rsync -avhc --progress "$1" "$2"
 }
 
-removei386() {
-	dpkg -l | grep -i :i386 | awk '{print $2}' | xargs doas apt autopurge --allow-remove-essential -y &&
+rmi386() {
+	dpkg -l | grep -i :i386 | awk '{print $2}' | DEBIAN_FRONTEND=noninteractive xargs doas apt autopurge --allow-remove-essential -y &&
 		doas dpkg --remove-architecture i386
+}
+
+rmsteam() {
+	rmi386 && rm -rf "${HOME}/.steam"*
 }
 
 createswap() {
