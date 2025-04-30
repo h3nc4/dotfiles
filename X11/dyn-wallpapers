@@ -11,14 +11,15 @@ while getopts "s:" opt; do
 	esac
 done
 
-wallpapers=$(find "${WALLPAPER_DIR}" -type f -printf '%P\n' | shuf --random-source=/dev/urandom)
 trap 'kill $!' USR1
 trap 'kill $!; RELOAD_WALL=y' USR2
 trap 'kill $!' EXIT
 
-if [ -z "${wallpapers}" ]; then
-	exit 1
-fi
+wallpapers=$(find "${WALLPAPER_DIR}" -type f -printf '%P\n' | shuf --random-source=/dev/urandom)
+while [ -z "${wallpapers}" ]; do
+	sleep 5
+	wallpapers=$(find "${WALLPAPER_DIR}" -type f -printf '%P\n' | shuf --random-source=/dev/urandom)
+done
 
 if [ -n "${FIRST_WALLPAPER}" ]; then
 	xwallpaper --zoom "${FIRST_WALLPAPER}"

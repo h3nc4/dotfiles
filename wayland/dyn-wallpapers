@@ -16,30 +16,30 @@ while getopts "s:" opt; do
 done
 
 # Find wallpapers and shuffle
-wallpapers=$(find "${WALLPAPER_DIR}" -type f -printf '%P\n' | shuf --random-source=/dev/urandom)
-trap 'kill $!' USR1
-trap 'kill $!; RELOAD_WALL=y' USR2
-trap 'kill $BG_PID $!' EXIT
+trap ':' USR1
+trap 'kill ${OLD_OLD_PID} ${OLD_PID} ${NEW_PID}; RELOAD_WALL=y' USR2
+trap 'kill ${OLD_OLD_PID} ${OLD_PID} ${NEW_PID}' EXIT
 
-if [ -z "${wallpapers}" ]; then
-	exit 1
-fi
+wallpapers=$(find "${WALLPAPER_DIR}" -type f -printf '%P\n' | shuf --random-source=/dev/urandom)
+while [ -z "${wallpapers}" ]; do
+	sleep 5
+	wallpapers=$(find "${WALLPAPER_DIR}" -type f -printf '%P\n' | shuf --random-source=/dev/urandom)
+done
 
 if [ -n "${FIRST_WALLPAPER}" ]; then
 	swaybg --mode fill -i "${FIRST_WALLPAPER}" &
-	BG_PID=$!
-	sleep 300 &
-	wait $!
-	kill "${BG_PID}"
+	OLD_PID=$!
 fi
 
 while :; do
 	for wallpaper in ${wallpapers}; do
 		swaybg --mode fill -i "${WALLPAPER_DIR}/${wallpaper}" &
-		BG_PID=$!
+		NEW_PID=$!
+		[ -n "${OLD_OLD_PID}" ] && kill "${OLD_OLD_PID}"
+		OLD_OLD_PID="${OLD_PID}"
+		OLD_PID="${NEW_PID}"
 		sleep 300 &
 		wait $!
-		kill "${BG_PID}"
 		if [ "${RELOAD_WALL}" = "y" ]; then
 			unset RELOAD_WALL
 			break
