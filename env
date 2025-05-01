@@ -1,5 +1,5 @@
 # Path
-export PATH="${HOME}/.local/bin:${HOME}/.local/bin/private:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
+export PATH="/opt/poetry/bin:/opt/pipx/bin:${HOME}/.local/bin:${HOME}/.local/bin/private:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
 
 # Terminal colors
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
@@ -70,4 +70,4 @@ export CHROME_EXECUTABLE='/usr/bin/chromium'
 GPG_TTY="$(tty 2>/dev/null || echo "/dev/tty2")"
 export GPG_TTY
 export WALLPAPER_DIR="${HOME}/media/wallpapers/"
-export SSH_ENV="$HOME/.ssh/agent-env"
+export SSH_ENV="${HOME}/.ssh/agent-env"
