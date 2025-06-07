@@ -1,7 +1,4 @@
 git() {
-	if [ -z "${SSH_AUTH_SOCK}" ]; then
-		eval "$(ssh-agent -s)"
-	fi
 	case "$1" in
 	clone | pull | push) if ! ssh-add -l 2>/dev/null; then ssh-add; fi ;;
 	*) ;;
