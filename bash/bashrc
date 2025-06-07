@@ -29,17 +29,17 @@ case $- in # Check for an interactive session
 esac
 
 if [ -z "${SSH_AUTH_SOCK}" ]; then {
+	mkdir -p "${HOME}/.ssh"
+
 	if [ -f "${SSH_ENV}" ]; then
 		. "${SSH_ENV}" >/dev/null
 	fi
 
 	# Start agent if file does not exist or if the agent is not running
-	if ! [ -f "${SSH_ENV}" ] || ! kill -0 "${SSH_AGENT_PID}" 2>/dev/null; then
-		(
-			umask 066
-			ssh-agent >"${SSH_ENV}"
-		)
-	fi
+	if ! [ -f "${SSH_ENV}" ] || ! kill -0 "${SSH_AGENT_PID}" 2>/dev/null; then (
+		umask 066
+		ssh-agent >"${SSH_ENV}"
+	); fi
 } & fi
 
 . "${SSH_ENV}" >/dev/null
