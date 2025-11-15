@@ -1,9 +1,9 @@
 # Path
 for d in "${HOME}/.local/bin/private" "${HOME}/.local/bin" /usr/games /usr/local/games /sbin /usr/sbin /usr/local/sbin; do
-    case ":$PATH:" in
-        *":$d:"*) ;; # skip if already in PATH 
-        *) PATH="$d${PATH:+:$PATH}" ;; # prepend if not
-    esac
+	case ":${PATH}:" in
+	*":${d}:"*) ;;                     # skip if already in PATH
+	*) PATH="${d}${PATH:+:${PATH}}" ;; # prepend if not
+	esac
 done
 export PATH
 

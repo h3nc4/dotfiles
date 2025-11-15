@@ -1,7 +1,14 @@
 #!/bin/sh
+# shellcheck disable=SC2154
 export DISPLAY=:0
 
 . "${HOME}/.config/env"
+
+start_if_missing() {
+	if ! pgrep -x "$1" >/dev/null 2>&1; then
+		$1 &
+	fi
+}
 
 xset +fp "${HOME}/.local/share/fonts/"
 xset fp rehash
@@ -13,6 +20,10 @@ xset fp rehash
 xwallpaper --zoom "${WALLPAPER_DIR}/landscape.jpg"
 
 compton &
+
+start_if_missing pipewire
+start_if_missing pipewire-pulse
+start_if_missing wireplumber
 
 (
 	sleep 3

@@ -1,7 +1,7 @@
 drun() {
 	img="$1"
 	shift
-	docker run --rm --name "$(echo "$img" | cut -d: -f1)" -it "$img" "$@"
+	docker run --rm --name "$(echo "${img}" | cut -d: -f1)" -it "${img}" "$@"
 }
 
 dprunebuilder() {

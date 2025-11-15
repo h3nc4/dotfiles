@@ -1,3 +1,6 @@
+# shellcheck disable=SC2032
+# shellcheck disable=SC2033
+# shellcheck disable=SC2040
 git() {
 	case "$1" in
 	clone | pull | push) if ! ssh-add -l 2>/dev/null; then ssh-add; fi ;;

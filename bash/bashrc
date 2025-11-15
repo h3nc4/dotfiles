@@ -29,7 +29,10 @@ case $- in # Check for an interactive session
 esac
 
 start_agent() {
-	(umask 066; ssh-agent >"${SSH_ENV}")
+	(
+		umask 066
+		ssh-agent >"${SSH_ENV}"
+	)
 	. "${SSH_ENV}" >/dev/null
 }
 
