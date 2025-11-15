@@ -28,21 +28,20 @@ case $- in # Check for an interactive session
 *) return ;;
 esac
 
-if [ -z "${SSH_AUTH_SOCK}" ]; then
-	mkdir -p "${HOME}/.ssh"
+start_agent() {
+	(umask 066; ssh-agent >"${SSH_ENV}")
+	. "${SSH_ENV}" >/dev/null
+}
 
-	if [ -f "${SSH_ENV}" ]; then
-		. "${SSH_ENV}" >/dev/null
+if [ -f "${SSH_ENV}" ]; then
+	. "${SSH_ENV}" >/dev/null
+
+	if [ ! -S "${SSH_AUTH_SOCK}" ] || ! kill -0 "${SSH_AGENT_PID}" 2>/dev/null; then
+		start_agent
 	fi
-
-	# Start agent if file does not exist or if the agent is not running
-	if ! [ -f "${SSH_ENV}" ] || ! kill -0 "${SSH_AGENT_PID}" 2>/dev/null; then (
-		umask 066
-		ssh-agent >"${SSH_ENV}"
-	); fi
+else
+	start_agent
 fi
-
-. "${SSH_ENV}" >/dev/null
 
 gpg-connect-agent /bye 2>/dev/null & # Start gpg-agent
 

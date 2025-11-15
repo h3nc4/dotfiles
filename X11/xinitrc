@@ -1,24 +1,22 @@
+#!/bin/sh
 export DISPLAY=:0
 
 . "${HOME}/.config/env"
-/usr/bin/X -nolisten tcp :0 vt1 -keeptty &
-sleep 2
+
 xset +fp "${HOME}/.local/share/fonts/"
 xset fp rehash
 
-# shellcheck disable=SC2154
 "${HOME}/.config/X11/dyn-wallpapers" -s "${WALLPAPER_DIR}/landscape.jpg" &
 "${HOME}/.config/X11/dyn-status" &
 "${HOME}/.config/X11/monitors"
 
 xwallpaper --zoom "${WALLPAPER_DIR}/landscape.jpg"
 
-# Composer
 compton &
 
 (
 	sleep 3
-	DISPLAY=:0 xmodmap "${HOME}/.config/X11/xmodmap"
+	xmodmap "${HOME}/.config/X11/xmodmap"
 ) &
 
 exec dwm

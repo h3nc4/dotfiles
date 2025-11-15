@@ -1,3 +1,16 @@
+git() {
+	case "$1" in
+	clone | pull | push) if ! ssh-add -l 2>/dev/null; then ssh-add; fi ;;
+	*) ;;
+	esac
+	env git "$@"
+}
+
+ssh() {
+	if ! ssh-add -l 2>/dev/null; then ssh-add; fi
+	env ssh "$@"
+}
+
 burn() {
 	dd status=progress bs=64k if="$1" of="$2"
 	sync

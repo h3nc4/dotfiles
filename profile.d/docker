@@ -1,3 +1,14 @@
+drun() {
+	img="$1"
+	shift
+	docker run --rm --name "$(echo "$img" | cut -d: -f1)" -it "$img" "$@"
+}
+
+dprunebuilder() {
+	yes | docker builder prune -f -a
+	yes | docker image prune -f --filter "dangling=true"
+}
+
 dstop() {
 	if [ -z "$1" ]; then
 		docker ps -a -q | xargs docker stop
@@ -33,13 +44,4 @@ dstart() {
 		return
 	fi
 	docker run -d --name "$2" "$1" sleep infinity
-}
-
-djs() { # example for vite: 'djs run dev -- --host 0.0.0.0'
-	docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/node-app" -w /node-app node:22-slim npm install &&
-		docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd):/node-app" -w /node-app -p 3000:3000 -p 5173:5173 node:22-slim npm "$*"
-}
-
-dive() {
-	docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -it wagoodman/dive
 }
