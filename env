@@ -62,7 +62,7 @@ export CARGO_HOME="${XDG_DATA_HOME}/cargo"
 
 # Various
 export BROWSER='firefox'
-export GTK_THEME='Materia-dark'
+export GTK_THEME='Adwaita-dark'
 export XKB_DEFAULT_LAYOUT='br'
 export XKB_DEFAULTMODEL='pc105'
 export MANPAGER='less -R'

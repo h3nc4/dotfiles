@@ -46,7 +46,7 @@ else
 	start_agent
 fi
 
-gpg-connect-agent /bye 2>/dev/null & # Start gpg-agent
+setsid gpg-connect-agent /bye >/dev/null 2>&1 </dev/null # Start gpg-agent
 
 # Start X or Wayland at login
 if [ "$(tty)" = "/dev/tty1" ]; then

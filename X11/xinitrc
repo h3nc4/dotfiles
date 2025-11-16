@@ -30,4 +30,8 @@ start_if_missing wireplumber
 	xmodmap "${HOME}/.config/X11/xmodmap"
 ) &
 
+if id -u dev >/dev/null 2>&1; then
+	xhost +SI:localuser:dev
+fi
+
 exec dwm
