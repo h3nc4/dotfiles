@@ -1,6 +1,22 @@
 # shellcheck disable=SC2154
 export LOADED_BASHRC=1 # Prevents this file from being sourced more than once
 
+# Load variables
+. "${HOME}/.config/env"
+
+if [ -n "${VSCODE_RESOLVING_ENVIRONMENT}" ]; then # If in VSCode, return
+	return
+fi
+
+if shopt -oq posix; then # If POSIX, return
+	return
+fi
+
+case $- in # Check for an interactive session
+*i*) ;;
+*) return ;;
+esac
+
 # Start tmux at login
 if [ -z "${TMUX}" ] && [[ "$(tty)" != /dev/tty[123] ]]; then # Starting tmux also clears the console
 	exec tmux new-session -s "session-$(\date +'%Y%m%d-%H%M%S-%3N')"
@@ -20,13 +36,7 @@ unset i
 . "${HOME}/.config/bash/functions"
 # Load Keybinds
 . "${HOME}/.config/bash/keybinds"
-# Load variables
-. "${HOME}/.config/env"
 
-case $- in # Check for an interactive session
-*i*) ;;
-*) return ;;
-esac
 
 start_agent() {
 	(
@@ -68,10 +78,6 @@ if [ "$(tty)" = "/dev/tty1" ]; then
 	fi
 	touch "${lockfile}"
 	pidof "${session}" >/dev/null 2>&1 || eval "${session_cmd}" >/dev/null 2>&1
-fi
-
-if shopt -oq posix; then # If POSIX, return
-	return
 fi
 
 # Setup dircolors
@@ -127,6 +133,7 @@ else
 	if ! pgrep -f "bibverse" >/dev/null; then
 		bibverse 2>/dev/null | sed 's/\(.*\)—/\1\n\t- /' >/tmp/bible.qotd &
 		disown $! # Suppress job finish notification by disowning it
+		chmod 777 /tmp/bible.qotd 2>/dev/null
 	fi
 fi
 

@@ -34,4 +34,6 @@ if id -u dev >/dev/null 2>&1; then
 	xhost +SI:localuser:dev
 fi
 
+xrdb -merge ~/.config/X11/xresources
+
 exec dwm
