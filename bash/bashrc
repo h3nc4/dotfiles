@@ -24,6 +24,16 @@ elif [ "$(tty)" != /dev/tty1 ]; then # Clear any messages on ttys but tty1
 	clear
 fi
 
+start_if_missing() {
+	if ! pgrep -x "$1" >/dev/null 2>&1; then
+		$1 &
+	fi
+}
+
+start_if_missing pipewire
+start_if_missing pipewire-pulse
+start_if_missing wireplumber
+
 # Load local profiles
 if [ -d "${HOME}/.config/profile.d" ]; then
 	for i in "${HOME}/.config/profile.d/"*; do . "${i}"; done
@@ -37,6 +47,13 @@ unset i
 # Load Keybinds
 . "${HOME}/.config/bash/keybinds"
 
+# Ensure XDG_RUNTIME_DIR exists as expected
+uid="$(id -u)"
+if [ ! -d "${XDG_RUNTIME_DIR}" ] || [ "$(stat -c '%u' "${XDG_RUNTIME_DIR}" 2>/dev/null)" -ne "${uid}" ]; then
+	doas mkdir -p "${XDG_RUNTIME_DIR}"
+	doas chown "${uid}:${uid}" "${XDG_RUNTIME_DIR}"
+	doas chmod 0700 "${XDG_RUNTIME_DIR}"
+fi
 
 start_agent() {
 	(
@@ -48,7 +65,6 @@ start_agent() {
 
 if [ -f "${SSH_ENV}" ]; then
 	. "${SSH_ENV}" >/dev/null
-
 	if [ ! -S "${SSH_AUTH_SOCK}" ] || ! kill -0 "${SSH_AGENT_PID}" 2>/dev/null; then
 		start_agent
 	fi
@@ -58,8 +74,8 @@ fi
 
 setsid gpg-connect-agent /bye >/dev/null 2>&1 </dev/null # Start gpg-agent
 
-# Start X or Wayland at login
-if [ "$(tty)" = "/dev/tty1" ]; then
+# Start X or Wayland at login but skip if a skip file is present
+if [ "$(tty)" = "/dev/tty1" ] && [ ! -f "${HOME}/.config/.skip-x" ]; then
 	if [ -f "${HOME}/.config/.wayland" ]; then
 		session="dwl"
 		lockfile="/tmp/.dwl-lock"

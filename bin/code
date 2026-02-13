@@ -1,0 +1,5 @@
+if [ "$(id -un)" = "dev" ]; then
+	exec /usr/local/bin/code
+else
+	exec doas -u dev /usr/local/bin/code
+fi

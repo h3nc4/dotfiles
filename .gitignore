@@ -2,6 +2,10 @@
 private/
 
 # Auto generated files
+Ladybird/
+OpenRGB/
+dconf/
+obs-studio/
 GIMP/
 qalculate/
 torbrowser/
