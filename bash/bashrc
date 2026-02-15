@@ -142,16 +142,25 @@ build_prompt() {
 }
 
 # Welcome message
-if [ -s "/tmp/bible.qotd" ]; then
-	echo -e "\033[1mWelcome ${USER}.\nToday is $(\date '+%A, %B %d, %Y').\n\n\033[0m$(cat /tmp/bible.qotd)\033[1m\n"
+FILE=/tmp/bible.qotd
+if [ -s "$FILE" ]; then
+	echo -e "\033[1mWelcome ${USER}.\nToday is $(\date '+%A, %B %d, %Y').\n\n\033[0m$(cat "$FILE")\033[1m\n"
 else
 	echo -e "\033[1mWelcome ${USER}.\nToday is $(\date '+%A, %B %d, %Y').\n"
-	if ! pgrep -f "bibverse" >/dev/null; then
-		bibverse 2>/dev/null | sed 's/\(.*\)—/\1\n\t- /' >/tmp/bible.qotd &
-		disown $! # Suppress job finish notification by disowning it
-		chmod 777 /tmp/bible.qotd 2>/dev/null
-	fi
 fi
+
+# If file doesn't exist or is older than 60 minutes, fetch a new quote of the day
+( if ! { [ -s "${FILE}" ] && find "${FILE}" -mmin -60 -quit >/dev/null 2>&1; }; then
+	exec 9>/tmp/bible.qotd.lock
+	flock -n 9 || exit 0
+	curl -fsS --max-time 5 -H 'User-Agent: Mozilla' https://www.verseoftheday.com/ |
+	hxnormalize -x |
+	hxselect -c 'div.bilingual-left' |
+	sed -e 's/<[^>]*>/ /g' -e 's/&mdash;/—/g' |
+	tr -s '[:space:]' ' ' |
+	sed 's/ — /\n\t- /' >"${FILE}"
+fi ) >/dev/null 2>&1 &
+disown
 
 # Remove annoying folders
 rm -rf "${HOME}/.pki"
