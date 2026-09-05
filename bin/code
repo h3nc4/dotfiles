@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Check if XDG_RUNTIME_DIR for dev user exists, if not create it
+if [ ! -d "/run/user/$(id -u dev)" ]; then
+	doas mkdir -p "/run/user/$(id -u dev)"
+	doas chown dev:dev "/run/user/$(id -u dev)"
+fi
+
+if [ "$(id -un)" = "dev" ]; then
+	exec /usr/local/bin/code
+else
+	exec doas \
+		-u dev env HOME=/home/dev \
+		XDG_CONFIG_HOME=/home/dev/.config \
+		"XDG_RUNTIME_DIR=/run/user/$(id -u dev)" \
+		/usr/local/bin/code
+fi

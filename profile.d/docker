@@ -1,3 +1,7 @@
+yt-dlp() {
+  docker run --rm -u "$(id -u):$(id -g)" -v "$PWD:/target" h3nc4/yt-dlp-slim "$@"
+}
+
 drun() {
 	img="$1"
 	shift

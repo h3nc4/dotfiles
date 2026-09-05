@@ -2,7 +2,7 @@
 set -ef
 
 user_host="${USER}@$(hostname)"
-bat_folder="$(find /sys/class/power_supply/ -maxdepth 2 -name 'BAT*' -print -quit)"
+bat_folder="$(find /sys/class/power_supply/ -maxdepth 2 -name 'BAT*' -print -quit 2>/dev/null || true)"
 
 if [ -d "${bat_folder}" ]; then
 	while :; do

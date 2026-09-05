@@ -10,14 +10,6 @@ nettest() {
 update() {
 	# Update the system
 	apt update && apt upgrade
-	# Update all pipx packages
-	pipx upgrade-all
-	# Update tealdeer's db
-	tldr --update >/dev/null 2>&1 &
-	disown $!
-	# Update the command-not-found database
-	doas update-command-not-found &
-	disown $!
 }
 
 myip() {

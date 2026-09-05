@@ -2,7 +2,16 @@
 private/
 
 # Auto generated files
+Ladybird/
+Code/
+OpenRGB/
+dconf/
+obs-studio/
 GIMP/
+Ryujinx/
+qBittorrent/
+VirtualBox/
+Meltytech/
 qalculate/
 torbrowser/
 transmission/

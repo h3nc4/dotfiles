@@ -1,0 +1,16 @@
+#!/bin/sh
+
+if [ "$(id -un)" = "steam" ]; then
+	exec "/usr/games/steam"
+fi
+
+doas setfacl -R -m "u:steam:rwx" "${XDG_RUNTIME_DIR}"
+
+exec doas -u "steam" env \
+	DISPLAY=:0 \
+	XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR}" \
+	PIPEWIRE_REMOTE=pipewire-0 \
+	PULSE_SERVER="unix:${XDG_RUNTIME_DIR}/pulse/native" \
+	__NV_PRIME_RENDER_OFFLOAD=1 \
+	__GLX_VENDOR_LIBRARY_NAME=nvidia \
+	/opt/Prism/PrismLauncher

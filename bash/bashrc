@@ -24,6 +24,27 @@ elif [ "$(tty)" != /dev/tty1 ]; then # Clear any messages on ttys but tty1
 	clear
 fi
 
+start_deamon() {
+	if ! pgrep -x "$1" >/dev/null 2>&1; then
+		(
+			(
+				exec setsid "$1" \
+					>"${HOME}/.local/$1.log" \
+					2>&1 \
+					</dev/null
+			) &
+			exit 0
+		)
+	fi
+}
+
+# If X or Wayland is running, start the audio services
+if [ -n "${DISPLAY}" ] || [ -n "${WAYLAND_DISPLAY}" ]; then
+	start_deamon pipewire
+	start_deamon pipewire-pulse
+	start_deamon wireplumber
+fi
+
 # Load local profiles
 if [ -d "${HOME}/.config/profile.d" ]; then
 	for i in "${HOME}/.config/profile.d/"*; do . "${i}"; done
@@ -37,29 +58,32 @@ unset i
 # Load Keybinds
 . "${HOME}/.config/bash/keybinds"
 
-
-start_agent() {
-	(
-		umask 066
-		ssh-agent >"${SSH_ENV}"
-	)
-	. "${SSH_ENV}" >/dev/null
-}
-
-if [ -f "${SSH_ENV}" ]; then
-	. "${SSH_ENV}" >/dev/null
-
-	if [ ! -S "${SSH_AUTH_SOCK}" ] || ! kill -0 "${SSH_AGENT_PID}" 2>/dev/null; then
-		start_agent
-	fi
-else
-	start_agent
+uid="$(id -u)"
+if [ ! -d "${XDG_RUNTIME_DIR}" ] || [ "$(stat -c '%u' "${XDG_RUNTIME_DIR}" 2>/dev/null)" -ne "${uid}" ]; then
+	doas mkdir -p "${XDG_RUNTIME_DIR}"
+	doas chown "${uid}:${uid}" "${XDG_RUNTIME_DIR}"
+	doas chmod 0700 "${XDG_RUNTIME_DIR}"
 fi
+
+SSH_LOCK="${SSH_ENV}.lock"
+(
+	flock -x 9 || exit 1
+
+	if [ -f "${SSH_ENV}" ]; then
+		. "${SSH_ENV}" >/dev/null
+		if [ -S "${SSH_AUTH_SOCK}" ] && kill -0 "${SSH_AGENT_PID}" 2>/dev/null; then
+			exit 0
+		fi
+	fi
+	umask 077
+	ssh-agent -s >"${SSH_ENV}"
+) 9>"${SSH_LOCK}"
+. "${SSH_ENV}" >/dev/null
 
 setsid gpg-connect-agent /bye >/dev/null 2>&1 </dev/null # Start gpg-agent
 
-# Start X or Wayland at login
-if [ "$(tty)" = "/dev/tty1" ]; then
+# Start X or Wayland at login but skip if a skip file is present
+if [ "$(tty)" = "/dev/tty1" ] && [ ! -f "${HOME}/.config/.skip-x" ]; then
 	if [ -f "${HOME}/.config/.wayland" ]; then
 		session="dwl"
 		lockfile="/tmp/.dwl-lock"
@@ -70,14 +94,14 @@ if [ "$(tty)" = "/dev/tty1" ]; then
 	else
 		session="Xorg"
 		lockfile="/tmp/.Xinit-lock"
-		session_cmd="exec startx"
+		session_cmd="exec startx ~/.config/X11/xinitrc"
 	fi
 	if [ -f "${lockfile}" ]; then
 		echo "${session} has restarted. Press Enter to restart ${session}."
 		read -r
 	fi
 	touch "${lockfile}"
-	pidof "${session}" >/dev/null 2>&1 || eval "${session_cmd}" >/dev/null 2>&1
+	pidof "${session}" >/dev/null 2>&1 || eval "${session_cmd}"
 fi
 
 # Setup dircolors

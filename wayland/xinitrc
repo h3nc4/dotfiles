@@ -1,4 +1,5 @@
 export DISPLAY=:0
+landscape="${WALLPAPER_DIR}/landscape.jpg"
 
 . "${HOME}/.config/env"
 /usr/bin/X -nolisten tcp :0 vt1 -keeptty &
@@ -6,11 +7,11 @@ sleep 2
 xset +fp "${HOME}/.local/share/fonts/"
 xset fp rehash
 
-"${HOME}/.config/X11/dyn-wallpapers" -s "${HOME}/media/wallpapers/landscape.jpg" &
+"${HOME}/.config/X11/dyn-wallpapers" -s "${landscape}" &
 "${HOME}/.config/X11/dyn-status" &
 "${HOME}/.config/X11/monitors"
 
-xwallpaper --zoom "${HOME}/media/wallpapers/landscape.jpg"
+xwallpaper --zoom "${landscape}"
 
 # Composer
 compton &

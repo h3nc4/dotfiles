@@ -3,14 +3,14 @@
 # shellcheck disable=SC2040
 git() {
 	case "$1" in
-	clone | pull | push) if ! ssh-add -l 2>/dev/null; then ssh-add; fi ;;
+	clone | pull | push) if ! ssh-add -l >/dev/null 2>&1; then ssh-add; fi ;;
 	*) ;;
 	esac
 	env git "$@"
 }
 
 ssh() {
-	if ! ssh-add -l 2>/dev/null; then ssh-add; fi
+	if ! ssh-add -l >/dev/null 2>&1; then ssh-add; fi
 	env ssh "$@"
 }
 
@@ -71,7 +71,7 @@ cdlink() {
 
 chwallpaper() {
 	if [ -z "$1" ]; then
-		xwallpaper --zoom "$(find "${HOME}/media/wallpapers/" -type f | shuf -n 1)"
+		xwallpaper --zoom "$(find "${WALLPAPER_DIR}" -type f | shuf -n 1)"
 		return
 	fi
 	xwallpaper --zoom "$1"
@@ -183,4 +183,54 @@ gdoc2all() {
 	tmpdoc="$(mktemp "gdocs-XXXXXXXXXX.${format}")"
 	wget -q --show-progress --progress=bar -O "${tmpdoc}" "https://docs.google.com/document/d/${BASH_REMATCH[1]}/export?format=${format}" &&
 		echo "File downloaded at ${tmpdoc}"
+}
+
+get-brave() {
+	( cd /tmp &&
+	doas rm -rf /opt/brave &&
+	doas mkdir -p /opt/brave &&
+	wget --show-progress --progress=bar -qO brave.zip https://github.com/brave/brave-browser/releases/download/v1.93.138/brave-browser-1.93.138-linux-amd64.zip &&
+	doas unzip -q brave.zip -d /opt/brave/ &&
+	doas ln -sf /opt/brave/brave-browser /usr/local/bin/brave &&
+	echo "Brave installed successfully.";
+	rm -f brave.zip )
+}
+
+get-code() {
+	doas rm -rf /opt/code/ &&
+	doas mkdir -p /opt/code &&
+	wget --show-progress --progress=bar  -qO- 'https://code.visualstudio.com/sha/download?build=stable&os=linux-x64' |
+	doas tar xzf - --strip-components=1 -C /opt/code/ &&
+	doas ln -sf /opt/code/bin/code /usr/local/bin/code &&
+	echo "Visual Studio Code installed successfully."
+}
+
+get-minecraft() {
+	(
+	cd /tmp &&
+	doas rm -rf /opt/Prism &&
+	doas mkdir -p /opt/Prism &&
+	wget --show-progress --progress=bar -qO prism.zip https://github.com/PrismLauncher/PrismLauncher/releases/latest/download/PrismLauncher-linux-x64.zip &&
+	doas unzip -q prism.zip -d /opt/Prism/ &&
+	echo "PrismLauncher installed successfully.";
+	rm -f prism.zip
+	)
+}
+
+get-torbrowser() {
+	(
+	local install_dir="${XDG_DATA_HOME:-$HOME/.local/share}/torbrowser"
+	local manifest="https://aus1.torproject.org/torbrowser/update_3/release/downloads.json"
+	local url
+	url="$(wget -qO- "${manifest}" | jq -r '.downloads["linux-x86_64"].ALL.binary')" &&
+	[ -n "${url}" ] && [ "${url}" != null ] &&
+	cd /tmp &&
+	rm -rf "${install_dir}" &&
+	mkdir -p "${install_dir}" &&
+	wget --show-progress --progress=bar -qO torbrowser.tar.xz "${url}" &&
+	tar -xf torbrowser.tar.xz -C "${install_dir}" --strip-components=1 &&
+	ln -sf "${install_dir}/Browser/start-tor-browser" "${HOME}/.local/bin/tor-browser" &&
+	echo "Tor Browser installed successfully at ${install_dir}.";
+	rm -f torbrowser.tar.xz
+	)
 }
