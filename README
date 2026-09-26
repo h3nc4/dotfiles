@@ -1,1 +1,54 @@
-Environment configuration deployed by https://github.com/h3nc4/Dreamweaver
+dotfiles
+--------
+
+The ~/.config tree for a Dreamweaver install. Every directory here lands under
+~/.config with the same name, so `bash/` becomes ~/.config/bash and so on.
+
+Released as a signed tarball rather than cloned into place. Dreamweaver's
+040-dotfiles step fetches dotfiles.tar.gz and its .asc from the latest release,
+checks the signature against the Dreamweaver key, and extracts it. A failed
+signature check stops the install.
+
+Released into the public domain, so copying one file out of here needs no
+attribution. See LICENSE.
+
+
+What is in it
+-------------
+
+    bash/           shell configuration and aliases
+    env             environment variables, sourced by the shell
+    profile.d/      per-topic snippets the shell sources at login
+    bin/            small scripts meant for PATH
+    git/            git configuration and ignore rules
+    X11/            Xorg client startup and resources
+    wayland/        the equivalent for a Wayland session
+    foot/           terminal for Wayland
+    lf/             file manager
+    mpv/            video player
+    aerc/           mail client
+    newsboat/       feed reader
+    tmux.conf       terminal multiplexer
+    gtk-2.0/        GTK 2 theming
+    gtk-3.0/        GTK 3 theming
+    compton.conf    compositor
+    mimeapps.list   default application per MIME type
+    wgetrc          wget defaults
+    npm/            npm configuration
+    dev/            release tooling for this repository, not installed
+
+private/ is a placeholder for machine-specific files that are not published.
+
+
+Using it without Dreamweaver
+----------------------------
+
+The tarball extracts anywhere, so one file can be copied out by hand:
+
+    wget -q https://github.com/h3nc4/dotfiles/releases/latest/download/dotfiles.tar.gz
+    tar --strip-components=1 -C "${HOME}/.config" -xf dotfiles.tar.gz
+
+That overwrites a matching path under ~/.config, so take a copy of anything
+already there first. The files assume a Dreamweaver install, which means dwm,
+st, dmenu and the package set that comes with them. Individual files carry over
+to another setup, while the tree as a whole does not.
