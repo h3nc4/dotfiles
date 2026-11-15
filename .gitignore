@@ -2,6 +2,7 @@
 private/
 
 # Auto generated files
+mozilla/
 Ladybird/
 Code/
 OpenRGB/
@@ -36,6 +37,8 @@ inkscape/
 QtProject.conf
 pavucontrol.ini
 .wayland
+StardewValley/
+eden/
 
 # symlinks
 bin/bibverse

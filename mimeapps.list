@@ -15,3 +15,9 @@ application/x-extension-shtml=firefox.desktop
 application/xhtml+xml=firefox.desktop
 application/x-extension-xhtml=firefox.desktop
 application/x-extension-xht=firefox.desktop
+
+[Added Associations]
+image/jpeg=firefox.desktop;
+application/octet-stream=firefox.desktop;
+video/mp4=firefox.desktop;
+image/png=firefox.desktop;

@@ -65,6 +65,10 @@ if [ ! -d "${XDG_RUNTIME_DIR}" ] || [ "$(stat -c '%u' "${XDG_RUNTIME_DIR}" 2>/de
 	doas chmod 0700 "${XDG_RUNTIME_DIR}"
 fi
 
+# Own the session bus, otherwise a client autolaunches one and writes ~/.dbus
+[ -S "${XDG_RUNTIME_DIR}/bus" ] || dbus-daemon --session \
+	--address="unix:path=${XDG_RUNTIME_DIR}/bus" --fork --syslog-only
+
 SSH_LOCK="${SSH_ENV}.lock"
 (
 	flock -x 9 || exit 1
@@ -94,7 +98,7 @@ if [ "$(tty)" = "/dev/tty1" ] && [ ! -f "${HOME}/.config/.skip-x" ]; then
 	else
 		session="Xorg"
 		lockfile="/tmp/.Xinit-lock"
-		session_cmd="exec startx ~/.config/X11/xinitrc"
+		session_cmd="exec startx ~/.config/X11/xinitrc -- vt7"
 	fi
 	if [ -f "${lockfile}" ]; then
 		echo "${session} has restarted. Press Enter to restart ${session}."

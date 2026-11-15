@@ -6,7 +6,7 @@ fi
 
 doas setfacl -R -m "u:steam:rwx" "${XDG_RUNTIME_DIR}"
 
-exec doas -u "steam" env \
+exec doas -u "steam" env -i HOME=/games/steam USER=steam LOGNAME=steam PATH=/usr/local/bin:/usr/bin:/bin:/usr/games LANG="${LANG:-C.UTF-8}" \
 	DISPLAY=:0 \
 	XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR}" \
 	PIPEWIRE_REMOTE=pipewire-0 \
