@@ -1,0 +1,7 @@
+#!/bin/sh
+xset s 0 0
+xset s noblank
+xset -dpms
+xset dpms 0 0 0
+xset dpms force off
+exec sleep infinity

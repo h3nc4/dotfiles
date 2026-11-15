@@ -1,5 +1,6 @@
 # Private config
 private/
+h3nc4/
 
 # Auto generated files
 mozilla/
@@ -8,6 +9,12 @@ Code/
 OpenRGB/
 dconf/
 obs-studio/
+.android/
+gh/
+Android\ Open\ Source\ Project/
+capacitor/
+configstore/
+vale/
 GIMP/
 Ryujinx/
 qBittorrent/
@@ -39,6 +46,7 @@ pavucontrol.ini
 .wayland
 StardewValley/
 eden/
+tool_state
 
 # symlinks
 bin/bibverse
