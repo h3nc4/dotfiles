@@ -36,7 +36,7 @@ get_steam() {
 		apt-get upgrade steam-installer mesa-vulkan-drivers libglx-mesa0:i386 mesa-vulkan-drivers:i386 libgl1-mesa-dri:i386
 }
 
-get-eden() {
+get_eden() {
 	tag="$(wget -q -O- "https://git.eden-emu.dev/api/v1/repos/eden-emu/eden/releases/latest" | sed -n 's/.*"tag_name":"\([^"]*\)".*/\1/p')" &&
 		[ -n "${tag}" ] &&
 		mkdir -p "/tmp/eden" &&
@@ -53,7 +53,7 @@ get-eden() {
 	unset tag
 }
 
-get-xsleep() {
+get_xsleep() {
 	mkdir -p "/tmp/xsleep" &&
 		{ getent group xsleep >/dev/null 2>&1 || doas groupadd xsleep; } &&
 		doas usermod -aG xsleep "${USER}" &&
