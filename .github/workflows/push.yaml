@@ -2,6 +2,9 @@ name: Run CI
 
 on:
   push:
+    branches:
+      - master
+  pull_request:
 
 jobs:
   deploy:
@@ -19,23 +22,29 @@ jobs:
             gpg-agent
       - uses: actions/checkout@v4
       - name: Import gpg key
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: echo "$GPG_PRIVATE_KEY" | gpg --batch --import
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
       - name: Tar repo
+        run: ./dev/make_tar
+      - name: Sign tarball
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
-          ./dev/make_tar
           gpg --batch --yes --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" --detach-sign --armor -o dotfiles.tar.gz.asc dotfiles.tar.gz
         env:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       - name: Gen tag name
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: echo "SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-8)" >>$GITHUB_ENV
       - name: Create tag
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
           git config --global safe.directory '*'
           git tag ${{ env.SHORT_SHA }}
           git push origin ${{ env.SHORT_SHA }}
       - name: Release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.SHORT_SHA }}
