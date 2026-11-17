@@ -163,14 +163,11 @@ fi
 
 # If file doesn't exist or is older than 60 minutes, fetch a new quote of the day
 (if ! { [ -s "${FILE}" ] && find "${FILE}" -mmin -60 -quit >/dev/null 2>&1; }; then
+	command -v bibverse >/dev/null || exit 0
 	exec 9>/tmp/bible.qotd.lock
 	flock -n 9 || exit 0
-	curl -fsS --max-time 5 -H 'User-Agent: Mozilla' https://www.verseoftheday.com/ |
-		hxnormalize -x |
-		hxselect -c 'div.bilingual-left' |
-		sed -e 's/<[^>]*>/ /g' -e 's/&mdash;/—/g' |
-		tr -s '[:space:]' ' ' |
-		sed 's/ — /\n\t- /' >"${FILE}"
+	VERSE="$(bibverse)" || exit 0
+	printf '%s\n' "${VERSE}" | sed 's/ — /\n\t- /' >"${FILE}"
 fi) >/dev/null 2>&1 &
 disown
 
