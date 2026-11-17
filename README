@@ -28,7 +28,7 @@ What is in it
     mpv/            video player
     aerc/           mail client
     newsboat/       feed reader
-    tmux.conf       terminal multiplexer
+    tmux/           terminal multiplexer
     gtk-2.0/        GTK 2 theming
     gtk-3.0/        GTK 3 theming
     compton.conf    compositor
