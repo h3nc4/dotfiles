@@ -1,6 +1,10 @@
 #!/bin/sh
 
-SHELL_SOURCES="$(find ./bash ./profile.d -type f -print 2>/dev/null)
+# Sourced by dash in Dreamweaver's install steps, so bash syntax breaks the install.
+POSIX_SOURCES="./env
+./profile.d/install"
+
+BASH_SOURCES="$(find ./bash ./profile.d -type f -print 2>/dev/null)
 ./X11/xinitrc
 ./env
 "
@@ -19,14 +23,24 @@ echo ""
 echo "${SHELL_SCRIPTS}" | xargs shellcheck -o all -s sh -e SC1091 -e SC1090 -e SC2312
 STATUS1="$?"
 
-echo "Checking the following bash sources:"
-echo "${SHELL_SOURCES}"
+echo "Checking the following posix sources:"
+echo "${POSIX_SOURCES}"
 echo ""
-echo "${SHELL_SOURCES}" | xargs shellcheck -o all -s bash -e SC1091 -e SC1090 -e SC2312 -e SC2292
-STATUS2="$?"
+STATUS2=0
+echo "${POSIX_SOURCES}" | xargs shellcheck -o all -s sh -e SC1091 -e SC1090 -e SC2312 || STATUS2=1
+for f in ${POSIX_SOURCES}; do
+	dash -n "${f}" || STATUS2=1
+done
 
-if [ "$((STATUS1 | STATUS2))" -eq 0 ]; then
-	echo "${SHELL_SCRIPTS} ${SHELL_SOURCES}" | xargs shfmt -w
+echo "Checking the following bash sources:"
+echo "${BASH_SOURCES}"
+echo ""
+echo "${BASH_SOURCES}" | xargs shellcheck -o all -s bash -e SC1091 -e SC1090 -e SC2312 -e SC2292
+STATUS3="$?"
+
+STATUS=$((STATUS1 | STATUS2 | STATUS3))
+if [ "${STATUS}" -eq 0 ]; then
+	echo "${SHELL_SCRIPTS} ${POSIX_SOURCES} ${BASH_SOURCES}" | xargs shfmt -w
 fi
 
-exit $((STATUS1 | STATUS2))
+exit "${STATUS}"

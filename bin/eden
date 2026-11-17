@@ -4,7 +4,7 @@ if [ "$(id -un)" = "steam" ]; then
 	exec "/opt/eden/AppRun" "$@"
 fi
 
-if ! getfacl -p "${XDG_RUNTIME_DIR}" 2>/dev/null | grep -q "^user:steam:rwx"; then
+if ! getfacl -p "${XDG_RUNTIME_DIR:?}" 2>/dev/null | grep -q "^user:steam:rwx"; then
 	doas setfacl -m "u:steam:rwx" "${XDG_RUNTIME_DIR}"
 fi
 

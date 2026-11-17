@@ -4,7 +4,7 @@ if [ "$(id -un)" = "steam" ]; then
 	exec "/usr/games/steam"
 fi
 
-doas setfacl -R -m "u:steam:rwx" "${XDG_RUNTIME_DIR}"
+doas setfacl -R -m "u:steam:rwx" "${XDG_RUNTIME_DIR:?}"
 
 exec doas -u "steam" env -i HOME=/games/steam USER=steam LOGNAME=steam PATH=/usr/local/bin:/usr/bin:/bin:/usr/games LANG="${LANG:-C.UTF-8}" \
 	DISPLAY=:0 \
