@@ -1,6 +1,6 @@
 ytmp3() {
 	if [ -z "$1" ]; then
-		mkdir -p "${MEDIA_DIR}/music/"
+		mkdir -p "${MEDIA_DIR:?}/music/"
 		yt-dlp --extract-audio --audio-format mp3 --output "${MEDIA_DIR}/music/%(title)s.%(ext)s" "$(xclip -o)"
 	elif [ -z "$2" ]; then
 		echo "Warning: No quality specified, defaulting to 5"
@@ -12,7 +12,7 @@ ytmp3() {
 
 ytmp4() {
 	if [ -z "$1" ]; then
-		mkdir -p "${MEDIA_DIR}/vids/"
+		mkdir -p "${MEDIA_DIR:?}/vids/"
 		yt-dlp --format "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]" --output "${MEDIA_DIR}/vids/%(title)s.%(ext)s" "$(xclip -o)"
 	else
 		yt-dlp --format "bv*[ext=mp4]+ba[ext=m4a]/b[ext=mp4]" "$1"
@@ -21,7 +21,7 @@ ytmp4() {
 
 ytwebm() {
 	if [ -z "$1" ]; then
-		mkdir -p "${MEDIA_DIR}/vids/"
+		mkdir -p "${MEDIA_DIR:?}/vids/"
 		yt-dlp --format "bv*[ext=webm]+ba[ext=webm]/b[ext=webm]" --output "${MEDIA_DIR}/vids/%(title)s.%(ext)s" "$(xclip -o)"
 	else
 		yt-dlp --format "bv*[ext=webm]+ba[ext=webm]/b[ext=webm]" "$1"
@@ -49,9 +49,9 @@ ytstreamaudio() {
 
 ytopus() {
 	if [ -z "$1" ]; then
-		mkdir -p "${MEDIA_DIR}/music/"
+		mkdir -p "${MEDIA_DIR:?}/music/"
 		yt-dlp --extract-audio --audio-format opus --output "${MEDIA_DIR}/music/%(title)s.%(ext)s" "$(xclip -o)"
 	else
-		yt-dlp --extract-audio --audio-format opus --output "${MEDIA_DIR}/music/%(title)s.%(ext)s" "$1"
+		yt-dlp --extract-audio --audio-format opus --output "${MEDIA_DIR:?}/music/%(title)s.%(ext)s" "$1"
 	fi
 }

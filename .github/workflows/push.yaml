@@ -7,7 +7,31 @@ on:
   pull_request:
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:bookworm-slim
+    steps:
+      - name: Install dependencies
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            ca-certificates \
+            dash \
+            file \
+            git \
+            shellcheck \
+            shfmt
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Lint
+        run: |
+          git config --global safe.directory '*'
+          ./dev/lint
+      - name: Check formatting
+        run: git diff --exit-code
+
   deploy:
+    needs: lint
     runs-on: ubuntu-latest
     container:
       image: debian:bookworm-slim
@@ -36,7 +60,7 @@ jobs:
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
       - name: Gen tag name
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: echo "SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-8)" >>$GITHUB_ENV
+        run: echo "SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-8)" >>"$GITHUB_ENV"
       - name: Create tag
         if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         run: |
