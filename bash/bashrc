@@ -24,15 +24,26 @@ elif [ "$(tty)" != /dev/tty1 ]; then # Clear any messages on ttys but tty1
 	clear
 fi
 
-start_if_missing() {
+start_deamon() {
 	if ! pgrep -x "$1" >/dev/null 2>&1; then
-		$1 &
+		(
+			(
+				exec setsid "$1" \
+					>"${HOME}/.local/$1.log" \
+					2>&1 \
+					</dev/null
+			) &
+			exit 0
+		)
 	fi
 }
 
-start_if_missing pipewire
-start_if_missing pipewire-pulse
-start_if_missing wireplumber
+# If X or Wayland is running, start the audio services
+if [ -n "${DISPLAY}" ] || [ -n "${WAYLAND_DISPLAY}" ]; then
+	start_deamon pipewire
+	start_deamon pipewire-pulse
+	start_deamon wireplumber
+fi
 
 # Load local profiles
 if [ -d "${HOME}/.config/profile.d" ]; then
@@ -47,7 +58,6 @@ unset i
 # Load Keybinds
 . "${HOME}/.config/bash/keybinds"
 
-# Ensure XDG_RUNTIME_DIR exists as expected
 uid="$(id -u)"
 if [ ! -d "${XDG_RUNTIME_DIR}" ] || [ "$(stat -c '%u' "${XDG_RUNTIME_DIR}" 2>/dev/null)" -ne "${uid}" ]; then
 	doas mkdir -p "${XDG_RUNTIME_DIR}"
@@ -55,22 +65,24 @@ if [ ! -d "${XDG_RUNTIME_DIR}" ] || [ "$(stat -c '%u' "${XDG_RUNTIME_DIR}" 2>/de
 	doas chmod 0700 "${XDG_RUNTIME_DIR}"
 fi
 
-start_agent() {
-	(
-		umask 066
-		ssh-agent >"${SSH_ENV}"
-	)
-	. "${SSH_ENV}" >/dev/null
-}
+# Own the session bus, otherwise a client autolaunches one and writes ~/.dbus
+[ -S "${XDG_RUNTIME_DIR}/bus" ] || dbus-daemon --session \
+	--address="unix:path=${XDG_RUNTIME_DIR}/bus" --fork --syslog-only
 
-if [ -f "${SSH_ENV}" ]; then
-	. "${SSH_ENV}" >/dev/null
-	if [ ! -S "${SSH_AUTH_SOCK}" ] || ! kill -0 "${SSH_AGENT_PID}" 2>/dev/null; then
-		start_agent
+SSH_LOCK="${SSH_ENV}.lock"
+(
+	flock -x 9 || exit 1
+
+	if [ -f "${SSH_ENV}" ]; then
+		. "${SSH_ENV}" >/dev/null
+		if [ -S "${SSH_AUTH_SOCK}" ] && kill -0 "${SSH_AGENT_PID}" 2>/dev/null; then
+			exit 0
+		fi
 	fi
-else
-	start_agent
-fi
+	umask 077
+	ssh-agent -s >"${SSH_ENV}"
+) 9>"${SSH_LOCK}"
+. "${SSH_ENV}" >/dev/null
 
 setsid gpg-connect-agent /bye >/dev/null 2>&1 </dev/null # Start gpg-agent
 
@@ -86,14 +98,14 @@ if [ "$(tty)" = "/dev/tty1" ] && [ ! -f "${HOME}/.config/.skip-x" ]; then
 	else
 		session="Xorg"
 		lockfile="/tmp/.Xinit-lock"
-		session_cmd="exec startx"
+		session_cmd="exec startx ~/.config/X11/xinitrc -- vt7"
 	fi
 	if [ -f "${lockfile}" ]; then
 		echo "${session} has restarted. Press Enter to restart ${session}."
 		read -r
 	fi
 	touch "${lockfile}"
-	pidof "${session}" >/dev/null 2>&1 || eval "${session_cmd}" >/dev/null 2>&1
+	pidof "${session}" >/dev/null 2>&1 || eval "${session_cmd}"
 fi
 
 # Setup dircolors

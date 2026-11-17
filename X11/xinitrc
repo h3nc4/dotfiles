@@ -30,4 +30,4 @@ fi
 
 xrdb -merge ~/.config/X11/xresources
 
-exec dwm
+exec /usr/local/bin/dwm

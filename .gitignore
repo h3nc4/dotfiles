@@ -1,12 +1,25 @@
 # Private config
 private/
+h3nc4/
 
 # Auto generated files
+mozilla/
 Ladybird/
+Code/
 OpenRGB/
 dconf/
 obs-studio/
+.android/
+gh/
+Android\ Open\ Source\ Project/
+capacitor/
+configstore/
+vale/
 GIMP/
+Ryujinx/
+qBittorrent/
+VirtualBox/
+Meltytech/
 qalculate/
 torbrowser/
 transmission/
@@ -31,6 +44,9 @@ inkscape/
 QtProject.conf
 pavucontrol.ini
 .wayland
+StardewValley/
+eden/
+tool_state
 
 # symlinks
 bin/bibverse

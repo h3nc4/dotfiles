@@ -1,9 +1,6 @@
 #!/bin/sh
 # shellcheck disable=SC2154
 
-# Default wallpaper directory
-WALLPAPER_DIR="${HOME}/media/wallpapers/"
-
 # Parse options
 while getopts "s:" opt; do
 	case ${opt} in

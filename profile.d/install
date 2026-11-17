@@ -35,3 +35,32 @@ get_steam() {
 		apt-get update &&
 		apt-get upgrade steam-installer mesa-vulkan-drivers libglx-mesa0:i386 mesa-vulkan-drivers:i386 libgl1-mesa-dri:i386
 }
+
+get-eden() {
+	tag="$(wget -q -O- "https://git.eden-emu.dev/api/v1/repos/eden-emu/eden/releases/latest" | sed -n 's/.*"tag_name":"\([^"]*\)".*/\1/p')" &&
+		[ -n "${tag}" ] &&
+		mkdir -p "/tmp/eden" &&
+		wget -q --show-progress --progress=bar -O "/tmp/eden/eden.AppImage" "https://stable.eden-emu.dev/${tag}/Eden-Linux-${tag}-amd64-clang-pgo.AppImage" &&
+		chmod +x "/tmp/eden/eden.AppImage" &&
+		(cd "/tmp/eden" && ./eden.AppImage --appimage-extract >/dev/null) &&
+		doas rm -rf /opt/eden &&
+		doas mv "/tmp/eden/AppDir" /opt/eden &&
+		doas chown -R root:root /opt/eden &&
+		doas chmod -R go-w,a+rX /opt/eden &&
+		echo "Successfully installed eden ${tag}" >&2 ||
+		echo "Got an error while installing eden" >&2
+	rm -rf "/tmp/eden/"
+	unset tag
+}
+
+get-xsleep() {
+	mkdir -p "/tmp/xsleep" &&
+		{ getent group xsleep >/dev/null 2>&1 || doas groupadd xsleep; } &&
+		doas usermod -aG xsleep "${USER}" &&
+		doas install -D -m 755 "${HOME}/.config/xsleep/xsleep-session" /usr/local/libexec/xsleep-session &&
+		gcc "${HOME}/.config/xsleep/xsleep-root.c" -o "/tmp/xsleep/xsleep-root" &&
+		doas install -o root -g xsleep -m 4750 "/tmp/xsleep/xsleep-root" /usr/local/bin/xsleep-root &&
+		echo "Successfully installed xsleep" >&2 ||
+		echo "Got an error while installing xsleep" >&2
+	rm -rf "/tmp/xsleep/"
+}
