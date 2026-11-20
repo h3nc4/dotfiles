@@ -26,6 +26,7 @@ What is in it
     foot/           terminal for Wayland
     lf/             file manager
     mpv/            video player
+    pipewire/       a second PulseAudio socket for bin/steam
     aerc/           mail client
     newsboat/       feed reader
     tmux/           terminal multiplexer
