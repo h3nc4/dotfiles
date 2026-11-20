@@ -10,5 +10,5 @@ exec doas -u "steam" env -i HOME=/games/steam USER=steam LOGNAME=steam PATH=/usr
 	DISPLAY=:0 \
 	XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR}" \
 	PIPEWIRE_REMOTE=pipewire-0 \
-	PULSE_SERVER="unix:${XDG_RUNTIME_DIR}/pulse/native" \
+	PULSE_SERVER="unix:${XDG_RUNTIME_DIR}/pulse-steam" \
 	"/usr/games/steam"

@@ -1,11 +1,12 @@
 #!/bin/sh
 # shellcheck disable=SC2154
-export DISPLAY=:0
-
 . "${HOME}/.config/env"
 
 xset +fp "${HOME}/.local/share/fonts/"
 xset fp rehash
+
+xset -dpms
+xset s off
 
 "${HOME}/.config/X11/dyn-wallpapers" -s "${WALLPAPER_DIR}/landscape.jpg" &
 "${HOME}/.config/X11/dyn-status" &

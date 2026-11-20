@@ -188,13 +188,18 @@ gdoc2all() {
 get-brave() {
 	(
 		cd /tmp &&
+			ver="$(wget -qO- https://api.github.com/repos/brave/brave-browser/releases/latest | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p')" &&
+			[ -n "${ver}" ] &&
+			zip="brave-browser-${ver}-linux-amd64.zip" &&
+			wget --show-progress --progress=bar -qO "${zip}" "https://github.com/brave/brave-browser/releases/download/v${ver}/${zip}" &&
+			wget -qO "${zip}.sha256" "https://github.com/brave/brave-browser/releases/download/v${ver}/${zip}.sha256" &&
+			sha256sum -c --quiet "${zip}.sha256" &&
 			doas rm -rf /opt/brave &&
 			doas mkdir -p /opt/brave &&
-			wget --show-progress --progress=bar -qO brave.zip https://github.com/brave/brave-browser/releases/download/v1.93.138/brave-browser-1.93.138-linux-amd64.zip &&
-			doas unzip -q brave.zip -d /opt/brave/ &&
+			doas unzip -q "${zip}" -d /opt/brave/ &&
 			doas ln -sf /opt/brave/brave-browser /usr/local/bin/brave &&
-			echo "Brave installed successfully."
-		rm -f brave.zip
+			echo "Brave ${ver} installed successfully."
+		rm -f "${zip}" "${zip}.sha256"
 	)
 }
 

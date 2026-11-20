@@ -98,7 +98,10 @@ if [ "$(tty)" = "/dev/tty1" ] && [ ! -f "${HOME}/.config/.skip-x" ]; then
 	else
 		session="Xorg"
 		lockfile="/tmp/.Xinit-lock"
-		session_cmd="exec startx ~/.config/X11/xinitrc -- vt7"
+		# XLibre where xlibre-opt installed it, unless a .xorg file asks for Xorg
+		xserver="/usr/bin/X"
+		[ -x /opt/xlibre/bin/X ] && [ ! -f "${HOME}/.config/.xorg" ] && xserver="/opt/xlibre/bin/X"
+		session_cmd="exec startx ~/.config/X11/xinitrc -- ${xserver} vt7"
 	fi
 	if [ -f "${lockfile}" ]; then
 		echo "${session} has restarted. Press Enter to restart ${session}."
