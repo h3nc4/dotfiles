@@ -25,10 +25,6 @@ if id -u dev >/dev/null 2>&1; then
 	xhost +SI:localuser:dev
 fi
 
-if id -u steam >/dev/null 2>&1; then
-	xhost +SI:localuser:steam
-fi
-
 xrdb -merge ~/.config/X11/xresources
 
 exec /usr/local/bin/dwm
