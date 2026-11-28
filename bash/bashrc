@@ -17,8 +17,11 @@ case $- in # Check for an interactive session
 *) return ;;
 esac
 
-# Start tmux at login
-if [ -z "${TMUX}" ] && [[ "$(tty)" != /dev/tty[123] ]]; then # Starting tmux also clears the console
+# Inside tmux, mark it for any host reached from here, since ssh sends LC_* and sshd accepts it
+[ -n "${TMUX}" ] && export LC_TMUX_PARENT=1
+
+# Start tmux at login, unless a tmux is already running here or on the ssh client
+if [ -z "${TMUX}" ] && [ -z "${LC_TMUX_PARENT}" ] && [[ "$(tty)" != /dev/tty[123] ]]; then # Starting tmux also clears the console
 	exec tmux new-session -s "session-$(\date +'%Y%m%d-%H%M%S-%3N')"
 elif [ "$(tty)" != /dev/tty1 ]; then # Clear any messages on ttys but tty1
 	clear
@@ -156,8 +159,8 @@ build_prompt() {
 	PS1="${BOLD}${RED}[${GREEN}\A${BLUE}/${CYAN}\u ${YELLOW}\W${RED}]${WHITE}${ref:+(${RED}${ref}${WHITE})}\$ ${RESET}"
 }
 
-# Welcome message
-FILE=/tmp/bible.qotd
+# Welcome message, from a cache per user so one user's file never blocks another's refresh
+FILE="${XDG_CACHE_HOME:-${HOME}/.cache}/bible.qotd"
 if [ -s "${FILE}" ]; then
 	echo -e "\033[1mWelcome ${USER}.\nToday is $(\date '+%A, %B %d, %Y').\n\n\033[0m$(cat "${FILE}")\033[1m\n"
 else
@@ -167,7 +170,8 @@ fi
 # If file doesn't exist or is older than 60 minutes, fetch a new quote of the day
 (if ! { [ -s "${FILE}" ] && find "${FILE}" -mmin -60 -quit >/dev/null 2>&1; }; then
 	command -v bibverse >/dev/null || exit 0
-	exec 9>/tmp/bible.qotd.lock
+	mkdir -p "${FILE%/*}"
+	exec 9>"${FILE}.lock"
 	flock -n 9 || exit 0
 	VERSE="$(bibverse)" || exit 0
 	printf '%s\n' "${VERSE}" | sed 's/ — /\n\t- /' >"${FILE}"
